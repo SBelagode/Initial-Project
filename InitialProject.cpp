@@ -63,6 +63,8 @@ Stucture of Program:
 - testing code is commented outside of main
 - manually assign error, than output of program is list of boxes
 
+- can verify graphs with https://www.geogebra.org/3d 
+
 */
 
 
@@ -301,32 +303,7 @@ void g(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
     mpfi_clear((mpfi_ptr) secondSubtraction);
 }
 
-//function that checks if 0 is defined for both f and g
-bool hasZero(mpfi_t x, mpfi_t y, mpfi_t z) {
 
-    // initializing intervals to store f and g, and then computing f and g with the given x,y,z intervals. 
-    mpfi_t resultOfF;
-    mpfi_init((mpfi_ptr) resultOfF);
-
-    mpfi_t resultOfg;
-    mpfi_init((mpfi_ptr) resultOfg);
-
-    f(resultOfF, x, y, z);
-
-    g(resultOfg, x, y, z);
-
-    //checking if f and g both have zero in them. Returning true if both have zero. 
-    if(mpfi_has_zero(resultOfF) && mpfi_has_zero(resultOfg)){
-        mpfi_clear((mpfi_ptr) resultOfF);
-        mpfi_clear((mpfi_ptr) resultOfg);
-        return true;
-    }
-    else{
-        mpfi_clear((mpfi_ptr) resultOfF);
-        mpfi_clear((mpfi_ptr) resultOfg);
-        return false;
-    }
-}
 
 
 
@@ -335,9 +312,9 @@ bool hasZero(mpfi_t x, mpfi_t y, mpfi_t z) {
 void hyperboloidOfOneSheet(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 
     //initializing constants. 
-    double a = 2;
-    double b = 2; 
-    double c = 2;
+    double a = 1;
+    double b = 1; 
+    double c = 1;
 
     a = pow(a, 2);
     b = pow(b, 2);
@@ -517,9 +494,9 @@ void hyperplane(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 void ellipsoid(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 
     //initializing constants. 
-    double a = 2;
+    double a = 1;
     double b = 2; 
-    double c = 2;
+    double c = 1;
 
     a = pow(a, 2);
     b = pow(b, 2);
@@ -996,6 +973,41 @@ bool hyperbolicCylinder(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 
 
 
+//function that checks if 0 is defined for both f and g
+bool hasZero(mpfi_t x, mpfi_t y, mpfi_t z) {
+
+    // initializing intervals to store f and g, and then computing f and g with the given x,y,z intervals. 
+    mpfi_t resultOfF;
+    mpfi_init((mpfi_ptr) resultOfF);
+
+    mpfi_t resultOfg;
+    mpfi_init((mpfi_ptr) resultOfg);
+
+
+
+    //This is the part of the code that you change to calculate for various function intersections. 
+
+    f(resultOfF, x, y, z);
+
+    //g(resultOfg, x, y, z);
+
+    hyperplane(resultOfg, x, y, z);
+
+    //checking if f and g both have zero in them. Returning true if both have zero. 
+    if(mpfi_has_zero(resultOfF) && mpfi_has_zero(resultOfg)){
+        mpfi_clear((mpfi_ptr) resultOfF);
+        mpfi_clear((mpfi_ptr) resultOfg);
+        return true;
+    }
+    else{
+        mpfi_clear((mpfi_ptr) resultOfF);
+        mpfi_clear((mpfi_ptr) resultOfg);
+        return false;
+    }
+}
+
+
+
 int main(){
 
 
@@ -1008,7 +1020,7 @@ int main(){
 
 
     //define error
-    double maxError = 0.49 / (pow(2.0, 6));
+    double maxError = 0.5 / (pow(2.0, 4));
     
 
 
