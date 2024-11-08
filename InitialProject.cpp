@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <cmath>
 #include <string>
+#include <sstream>
+
 
 
 /*PLEASE READ: 
@@ -313,7 +315,7 @@ void hyperboloidOfOneSheet(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 
     //initializing constants. 
     double a = 1;
-    double b = 1; 
+    double b = 0.75; 
     double c = 1;
 
     a = pow(a, 2);
@@ -376,9 +378,9 @@ void hyperboloidOfOneSheet(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 void hyperboloidOfTwoSheets(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 
     //initializing constants. 
-    double a = 2;
+    double a = 1;
     double b = 2; 
-    double c = 2;
+    double c = 0.5;
 
     a = pow(a, 2);
     b = pow(b, 2);
@@ -437,10 +439,10 @@ void hyperboloidOfTwoSheets(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 
 //calculates equation for hyperplane aX + bY + cZ + d = 0. Make sure to clear ROP, x, y, z somewhere else
 void hyperplane(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
-    double a = 2; 
-    double b = 3 ;
-    double c = 1;
-    double d = 0.75;
+    double a = 0; 
+    double b = 0 ;
+    double c = -1;
+    double d = 0.5;
 
 
     mpfi_t xScaled;
@@ -558,7 +560,7 @@ void ellipticCone(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 
     //initializing constants. 
     double a = 2;
-    double b = 2; 
+    double b = 3; 
     double c = 2;
 
     a = pow(a, 2);
@@ -613,11 +615,11 @@ function that defines hyperbolic paraboloid. It performs interval arithmetic on 
 then stores the calculated interval in ROP (resultant output). The equation for a hyperbolic paraboloid is given by x^2/a^2 - y^2/b^2 = z/c
 */
 
-void hyperbolicParabolid(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
+void hyperbolicParaboloid(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
     //constants a,b,c
-    double a = 2; 
-    double b = 2; 
-    double c = 3; 
+    double a = 1; 
+    double b = 1; 
+    double c = 1; 
 
     a = pow(a,2);
     b = pow(b,2);
@@ -648,10 +650,10 @@ void hyperbolicParabolid(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
     mpfi_div_d(zDividedByC, z, c);
 
 
-    //Adding x^2 and y^2
+    //subtracting y^2 from x^2
     mpfi_t firstSubtraction;
     mpfi_init((mpfi_ptr) firstSubtraction);
-    mpfi_add ((mpfi_ptr) firstSubtraction, (mpfi_ptr) xSquared, (mpfi_ptr) ySquared);
+    mpfi_sub ((mpfi_ptr) firstSubtraction, (mpfi_ptr) xSquared, (mpfi_ptr) ySquared);
 
     //Subtracting z from firstSubtraction and then storing result in ROP 
     
@@ -727,24 +729,26 @@ void ellipticParabolid(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
  * corresponding to 1 if the cylinder is defined, and 0 if not. Note that unlike the other functions defined in this program, this is not void but
  * returns a boolean value to account for the fact that it must test if the z interval is within the given z axis bounds of the cylinder equation.   
  * z axis bounds are optional. General equation of a cylinder is x^2 + y^2 = r
+ * 
+ * 
 */
 
 bool ellipticCylinder(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 
     //scaling x^2 and y^2 
     double a = 1;
-    double b = 1;
+    double b = 0.8;
 
     a = pow(a, 2);
     b = pow(b, 2);
 
     //initializing constants. 
     //lower and upper bounds in z axis
-    double z1 = 2;
-    double z2 = 4; 
+    double z1 = 0;
+    double z2 = 1; 
 
     //radius
-    double r = 2;
+    double r = 0.5;
 
 
     mpfi_t xSquared;
@@ -786,6 +790,8 @@ bool ellipticCylinder(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
         //Getting the left and right endpoints of the z interval
         mpfr_t leftEndpoint; 
         mpfr_t rightEndpoint; 
+        mpfr_init(leftEndpoint);
+        mpfr_init(rightEndpoint);
         mpfi_get_left(leftEndpoint, z);
         mpfi_get_right(rightEndpoint, z);
 
@@ -827,8 +833,8 @@ bool parabolicCylinder(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 
     //initializing constants. 
     //lower and upper bounds in z axis
-    double z1 = 2;
-    double z2 = 4; 
+    double z1 = -1;
+    double z2 = 1; 
 
     mpfi_t xSquared;
     // Initialize the interval variable
@@ -854,6 +860,8 @@ bool parabolicCylinder(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
         //Getting the left and right endpoints of the z interval
         mpfr_t leftEndpoint; 
         mpfr_t rightEndpoint; 
+        mpfr_init(leftEndpoint);
+        mpfr_init(rightEndpoint);
         mpfi_get_left(leftEndpoint, z);
         mpfi_get_right(rightEndpoint, z);
 
@@ -886,22 +894,22 @@ bool parabolicCylinder(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
  * This is a function calculating whether for a given x,y, and z interval, the equation for a hyperbolic cylinder is defined. It does so by returning a boolean value
  * corresponding to 1 if the cylinder is defined, and 0 if not. Note that unlike the other functions defined in this program, this is not void but
  * returns a boolean value to account for the fact that it must test if the z interval is within the given z axis bounds of the cylinder equation.   
- * z axis bounds are optional. General equation of a hyperbolic cylinder is x^2/a - y^2/b = 1
+ * z axis bounds are optional. General equation of a hyperbolic cylinder is x^2/a^2 - y^2/b^2 = 1
 */
 
 bool hyperbolicCylinder(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 
     //scaling x^2 and y^2 
-    double a = 1;
-    double b = 1;
+    double a = 0.5;
+    double b = 0.5;
 
     a = pow(a, 2);
     b = pow(b, 2);
 
     //initializing constants. 
     //lower and upper bounds in z axis
-    double z1 = 2;
-    double z2 = 4; 
+    double z1 = -1;
+    double z2 = 1; 
 
     mpfi_t xSquared;
     // Initialize the interval variable
@@ -942,6 +950,8 @@ bool hyperbolicCylinder(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
         //Getting the left and right endpoints of the z interval
         mpfr_t leftEndpoint; 
         mpfr_t rightEndpoint; 
+        mpfr_init(leftEndpoint);
+        mpfr_init(rightEndpoint);
         mpfi_get_left(leftEndpoint, z);
         mpfi_get_right(rightEndpoint, z);
 
@@ -970,7 +980,381 @@ bool hyperbolicCylinder(mpfi_t ROP,mpfi_t x, mpfi_t y, mpfi_t z){
 }
 
 
+/*********
+ * 
+ * 
+ *
+ * This code chunk below is for the manual expression functionality. It accepts an arbitrary sum/difference of monomials
+ * 
+ * 
+ */
 
+//This seperates an expression into operators and monomials
+
+void separateExpression(std::string expression, std::vector<std::string> &variables, std::vector<std::string> &arr) {
+    std::stringstream ss(expression);
+    std::string token;
+    bool expectOperator = false;
+
+    // the >> operator is usually right shift, but in stream contexts can act as "read until next delimiter (in this program, it is 
+    //white space). Then stores this in token. "
+    while (ss >> token) {
+
+        if (token == "+" || token == "-") {
+            //next token should 
+            if (!expectOperator) {
+            std::cerr << "Wrong input: Unexpected operator at this position (should've been an algebraic expression).\n";
+            return;
+            }
+            //If the token is an operator, add it to the arr vector
+
+
+            arr.push_back(token);
+
+            expectOperator = false;
+        } else {
+
+            if (expectOperator) {
+            std::cerr << "Wrong input: Unexpected expression at this position (should've been an operator).\n";
+            return;
+            }
+
+            // If the token is a monomial, add it to the variables vector
+            variables.push_back(token);
+            expectOperator = true;
+        }
+    }
+}
+
+//extracts the power a particular variable is raised to. 
+int extractPower(std::string str, char variable) {
+
+    //use size_t because that is how sizes are defined in c++ and also it's default return type of these functions anyway
+    //find the position of the variable
+    size_t pos = str.find(variable);
+    if (pos == std::string::npos) {
+        return -1;
+    }  
+    
+    //find the position of '^' after the variable
+    size_t pow_pos = str.find('^', pos);
+    if (pow_pos == std::string::npos) {
+         return -1;
+        
+    
+    }  
+    //find the position of the next variable or the end of the string
+    size_t next_var_pos = str.find_first_of("xyz", pow_pos + 1);
+    
+    //extract the power substring. substr(starting index, length) 
+    std::string power_str = str.substr(pow_pos + 1, next_var_pos - pow_pos - 1);
+    
+    //convert the substring to an integer
+    return std::stoi(power_str);
+}
+
+//raises an interval to an arbitrary power
+
+void raiseToPower(mpfi_t result, mpfi_t inputInterval, int exponentNumerator, int exponentDenominator) {
+    mpfi_t temp;
+    mpfi_init(temp);
+    //let p = exponent
+    mpfi_set(temp, inputInterval);
+
+
+    //loop through power - 1 times since we've already set temp equal to the first power
+    for(int i = 0; i < exponentNumerator -1; i++){
+        mpfi_mul(temp, temp, inputInterval);
+    }
+
+
+    //checking if the interval is raised to an even power. 
+    //if raised to an even power, then check if contains negative values. If 0 is contained, then assumed to have both negative and 
+    //positive values, if no 0, than just return interval
+    if(exponentNumerator %2 == 0){
+        //if has 0, set left endpoint to 0, and keep right endpoint. If not, do nothing and leave interval since there should be 
+        //no negative values in that case. 
+        if(mpfi_has_zero(temp)){
+            mpfr_t rightEndpoint;
+            mpfr_init(rightEndpoint);
+            mpfi_get_right(rightEndpoint, temp);
+            //rounding away from 0 (encompoass larger margin of error always)
+            double rightEndpointInDoubleFormat = mpfr_get_d(rightEndpoint, MPFR_RNDU);
+            mpfi_interv_d(temp, 0.0, rightEndpointInDoubleFormat);
+            mpfr_clear(rightEndpoint);
+        }
+        
+    }
+
+   
+
+    mpfi_set(result, temp);
+    mpfi_clear(temp);
+}
+
+
+//returns what case the expresion is. We use this case to determine how to evaluate an expression on a given interval
+
+// the following case numbers correspond to each possibility: 
+
+// x => 1, y => 2, x, xy => 3 , z => 4, xz => 5, yz => 6, xyz => 7, no variables = 0
+
+int caseNumber(std::string expression){
+
+    int code = 0;
+
+    // Check for the presence of 'x', 'y', 'z'
+    if (expression.find('x') != std::string::npos) code |= 1; // Set bit 0
+    if (expression.find('y') != std::string::npos) code |= 2; // Set bit 1
+    if (expression.find('z') != std::string::npos) code |= 4; // Set bit 2
+
+    return code;
+
+
+
+}
+
+
+//without parenthesis 
+
+// sets resultOfExpression (assumed to be initialized but not set interval) to the result of the expression when evaluated on the 
+//given x,y,z intervals. 
+
+//can't handle fractional powers. 
+
+void eval(mpfi_t resultOfExpression, std::string expression, mpfi_t xInterval, mpfi_t yInterval, mpfi_t zInterval){
+
+    //check if the there is a constant at the start of the expression
+    double constant;
+    if(isdigit(expression[0])){
+        //extract the constant number
+        size_t next_var_pos = expression.find_first_of("xyz",  0);
+    
+        //extract the power substring. substr(starting index, length) 
+        constant = std::stod((expression.substr(0, next_var_pos))) ;
+        
+    }
+
+    //std::cout << "This expression :" << expression << "\n\n\n";
+
+
+    int code = caseNumber(expression);
+
+    
+    switch (code ) {
+
+        //case x^something
+        case 1: {
+            raiseToPower(resultOfExpression, xInterval, extractPower(expression,'x'), 1);
+
+            if(isdigit(expression[0])){
+                mpfi_mul_d(resultOfExpression,resultOfExpression, constant);   
+            }
+
+            return;
+        }
+
+        // Case 'y^something' 
+        case 2: {
+            raiseToPower(resultOfExpression, yInterval, extractPower(expression,'y'), 1);
+
+            if(isdigit(expression[0])){
+                mpfi_mul_d(resultOfExpression,resultOfExpression, constant);   
+            }
+            return ; 
+        }
+        // Case 'z^something'
+        case 4: {
+
+            raiseToPower(resultOfExpression, zInterval, extractPower(expression,'z'), 1);
+
+            if(isdigit(expression[0])){
+                mpfi_mul_d(resultOfExpression,resultOfExpression, constant);   
+            }
+
+            
+            return ; 
+        }
+        // Case 'x^something y^something'
+        case 3: {
+
+
+            mpfi_t xRaisedToPower;
+            mpfi_init(xRaisedToPower);
+            mpfi_t yRaisedToPower;
+            mpfi_init(yRaisedToPower);
+
+            raiseToPower(xRaisedToPower, xInterval, extractPower(expression, 'x'), 1);
+            raiseToPower(yRaisedToPower, yInterval, extractPower(expression, 'y'), 1);
+
+            mpfi_mul(resultOfExpression, xRaisedToPower, yRaisedToPower);
+            if(isdigit(expression[0])){
+                mpfi_mul_d(resultOfExpression,resultOfExpression, constant);   
+            }
+
+            mpfi_clear(xRaisedToPower);
+            mpfi_clear(yRaisedToPower);
+            return ; 
+        }
+         // Case 'x^something z^something'
+        case 5: {
+
+
+            mpfi_t xRaisedToPower;
+            mpfi_init(xRaisedToPower);
+            mpfi_t zRaisedToPower;
+            mpfi_init(zRaisedToPower);
+
+
+            raiseToPower(xRaisedToPower, xInterval, extractPower(expression, 'x'), 1);
+            raiseToPower(zRaisedToPower, zInterval, extractPower(expression, 'z'), 1);
+
+            mpfi_mul(resultOfExpression, xRaisedToPower, zRaisedToPower);
+            if(isdigit(expression[0])){
+                mpfi_mul_d(resultOfExpression,resultOfExpression, constant);   
+            }
+
+            mpfi_clear(xRaisedToPower);
+            mpfi_clear(zRaisedToPower);
+            return;
+        }
+
+        // Case 'y^something z^something'
+        case 6: {
+
+            mpfi_t yRaisedToPower;
+            mpfi_init(yRaisedToPower);
+            mpfi_t zRaisedToPower;
+            mpfi_init(zRaisedToPower);
+
+
+            raiseToPower(yRaisedToPower, yInterval, extractPower(expression, 'y'), 1);
+            raiseToPower(zRaisedToPower, zInterval, extractPower(expression, 'z'), 1);
+
+            mpfi_mul(resultOfExpression, yRaisedToPower, zRaisedToPower);
+            if(isdigit(expression[0])){
+                mpfi_mul_d(resultOfExpression,resultOfExpression, constant);   
+            }
+
+            mpfi_clear(yRaisedToPower);
+            mpfi_clear(zRaisedToPower);
+            
+            return ; 
+        }
+
+        // Case 'x^something y^something z^something'
+        case 7: {
+
+
+            mpfi_t xRaisedToPower;
+            mpfi_init(xRaisedToPower);
+            mpfi_t yRaisedToPower;
+            mpfi_init(yRaisedToPower);
+            mpfi_t zRaisedToPower;
+            mpfi_init(zRaisedToPower);
+
+
+            raiseToPower(xRaisedToPower, xInterval, extractPower(expression, 'x'), 1);
+            raiseToPower(yRaisedToPower, yInterval, extractPower(expression, 'y'), 1);
+            raiseToPower(zRaisedToPower, zInterval, extractPower(expression, 'z'), 1);
+
+
+            mpfi_mul(resultOfExpression, xRaisedToPower, yRaisedToPower);
+            mpfi_mul(resultOfExpression, resultOfExpression, zRaisedToPower);
+            if(isdigit(expression[0])){
+                mpfi_mul_d(resultOfExpression,resultOfExpression, constant);   
+            }
+
+            mpfi_clear(xRaisedToPower);
+            mpfi_clear(zRaisedToPower);
+            mpfi_clear(yRaisedToPower);
+            return;
+        }
+
+        //case where just a constant
+        case 0:
+        {
+            //set interval to the value of a double
+            mpfi_interv_d(resultOfExpression,std::stod(expression), std::stod(expression));   
+            
+        
+            return ; 
+        }
+    }
+}
+
+void abstractExpressionCalculator(std::string expression, mpfi_t x, mpfi_t y, mpfi_t z, mpfi_t finalAnswer){
+
+
+    
+
+    //first parse expression and fill the operations vector (arr) and the variables vector
+    std::vector<std::string>  arr ; 
+
+    std::vector<std::string> variables;
+
+    separateExpression(expression, variables, arr);
+
+    // for(const auto &i: arr){
+    //     std::cout << i << " ";
+    // }
+
+    // std::cout << "\n\n";
+
+    // for(const auto &i: variables){
+    //     std::cout << i << " ";
+    // }
+
+    std::cout << "\n\n";
+
+    //start iterating through the expression 
+    mpfi_t tempAddOrSub;
+
+    mpfi_init(tempAddOrSub);
+
+    //evaluate first part of expression
+    eval(finalAnswer, variables[0], x, y, z);
+
+    mpfi_out_str(stdout, 10, 10, finalAnswer);
+    std::cout << "\n";
+
+
+    //use eval function for each variable
+    for(int i = 1; i < variables.size(); i++){
+
+        
+
+
+        eval(tempAddOrSub, variables[i], x, y, z);
+
+
+
+        //adding and subtracting: 
+        if(arr[i-1] == "+"){
+            mpfi_add(finalAnswer, finalAnswer, tempAddOrSub);
+        }
+        else{
+            mpfi_sub(finalAnswer, finalAnswer, tempAddOrSub);
+
+        }       
+    }
+
+    
+    
+
+    mpfi_clear(tempAddOrSub);
+
+}
+
+
+/*********
+ * 
+ * 
+ *
+ * This code chunk above is for the manual expression functionality
+ * 
+ * 
+ */
 
 
 //function that checks if 0 is defined for both f and g
@@ -984,14 +1368,93 @@ bool hasZero(mpfi_t x, mpfi_t y, mpfi_t z) {
     mpfi_init((mpfi_ptr) resultOfg);
 
 
+    //this is an optional expression in case a manual expression would like to be used. 
+
+    //dogan example 1
+    std::string expression = "x^4 + 2x^2y^2 + y^4 - 2x^2 - 2y^2 + 1 - z^1";
+
+    //dogan example 2
+    std::string doganExperiment4a = "x^2 + y^2 - z^2 - 2";
+    std::string doganExperiment4b = "x^2 - y^2 + z^2 - 1";
+
 
     //This is the part of the code that you change to calculate for various function intersections. 
 
-    f(resultOfF, x, y, z);
+    //f(resultOfF, x, y, z);
+
+    
 
     //g(resultOfg, x, y, z);
 
-    hyperplane(resultOfg, x, y, z);
+    //For visualization
+
+    //f(resultOfF, x, y, z);
+    abstractExpressionCalculator(doganExperiment4a, x, y, z, resultOfg);
+    abstractExpressionCalculator(doganExperiment4b, x, y, z, resultOfF);
+
+    // hyperplane(resultOfF, x, y, z);
+    
+
+    //testing to make sure each calculation is the same: 
+
+    // mpfr_t rightEndpoint;
+    // mpfr_init(rightEndpoint);
+    // mpfr_t rightEndpoint2;
+    // mpfr_init(rightEndpoint2);
+    // mpfr_t leftEndpoint;
+    // mpfr_init(leftEndpoint);
+    // mpfr_t leftEndpoint2;
+    // mpfr_init(leftEndpoint2);
+
+
+
+    // mpfi_get_right(rightEndpoint, resultOfF);
+    // mpfi_get_right(rightEndpoint2, resultOfg);
+    // mpfi_get_left(leftEndpoint, resultOfF);
+    // mpfi_get_left(leftEndpoint2, resultOfg);
+
+    // //rounding away from 0 (encompoass larger margin of error always)
+    // double rightEndpointInDoubleFormat = mpfr_get_d(rightEndpoint, MPFR_RNDU);
+    // double right2EndpointInDoubleFormat = mpfr_get_d(rightEndpoint2, MPFR_RNDU);
+    // double leftEndpointInDoubleFormat = mpfr_get_d(leftEndpoint, MPFR_RNDU);
+    // double left2EndpointInDoubleFormat = mpfr_get_d(leftEndpoint2, MPFR_RNDU);
+
+    // if(rightEndpointInDoubleFormat != right2EndpointInDoubleFormat || leftEndpointInDoubleFormat != left2EndpointInDoubleFormat){
+    //     std::cout << "PROBLEM: Here are the input intervals, then after are the calculations\n";
+    //     std::cout << " These next three are the x,y,z intervals\n";
+
+    // mpfi_out_str(stdout, 10, 10, x);
+    // std::cout << "\n";
+
+    //  mpfi_out_str(stdout, 10, 10, y);
+    // std::cout << "\n";
+
+
+    // mpfi_out_str(stdout, 10, 10, z);
+    // std::cout << "\n";
+
+    // mpfi_out_str(stdout, 10, 10, resultOfF);
+    // std::cout << "\n";
+
+
+    // mpfi_out_str(stdout, 10, 10, resultOfg);
+    // std::cout << "\n";
+    // }
+
+
+    // mpfr_clear(rightEndpoint);
+    // mpfr_clear(rightEndpoint2);
+    // mpfr_clear(leftEndpoint);
+    // mpfr_clear(leftEndpoint2);
+
+
+    //end test
+    
+
+
+    
+
+
 
     //checking if f and g both have zero in them. Returning true if both have zero. 
     if(mpfi_has_zero(resultOfF) && mpfi_has_zero(resultOfg)){
@@ -1016,7 +1479,7 @@ int main(){
     
 
     //define interval box that I will be computing within 
-    intervalClass initialInterval = intervalClass(-1, 1, -1, 1, -1, 1);
+    intervalClass initialInterval = intervalClass(-3, 3, -3, 3, -3, 3);
 
 
     //define error
@@ -1170,266 +1633,3 @@ int main(){
 } 
 
 
-
-
-//######################################################################################
-//Ignore commented code below, just used for the purposes of testing. 
-//######################################################################################
-
-// // Loop 8 times
-    // for (double i = 0; i < 8; i++) {
-    //     // Allocate and initialize a new mpfi_t variable
-    //     intervalClass x = intervalClass(i -1 , i+1);
-    //     // Add the interval pointer to the queue
-    //     q.push(x);
-    // }
-    // std::cout<<" After exiting ";
-
-
-    // // Process and clear each interval
-    // while (!q.empty()) {
-    //     // Get the interval pointer from the front of the queue
-    //     intervalClass interval = q.front();
-    //     q.pop();
-    //     interval.p();
-    // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-    //#######################################################
-    //testing interval functions to see if they work
-    mpfi_t interval;
-    
-
-    // Initialize the interval variable
-    mpfi_init((mpfi_ptr) interval);
-
-    // Set the interval to [-1, 1]
-    mpfi_interv_si( (mpfi_ptr) interval, -1, 1);
-
-    // Display the interval
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) interval);
-    std::cout << "\n";
-
-
-    //testing interval functions to see if they work
-    mpfi_t interval2;
-    
-
-    // Initialize the interval variable
-    mpfi_init((mpfi_ptr) interval2);
-
-    // Set the interval to [-1, 1]
-    mpfi_interv_si( (mpfi_ptr) interval2, -1, 5);
-
-    // Display the interval
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) interval2);
-    std::cout << "\n";
-
-
-    mpfi_t addTwoIntervals;
-    mpfi_init((mpfi_ptr) addTwoIntervals);
-
-    mpfi_add ((mpfi_ptr) addTwoIntervals, (mpfi_ptr) interval, (mpfi_ptr) interval2);
-
-    std::cout << "After add function" << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) addTwoIntervals);
-    std::cout << "\n";
-
-
-    // Clear the interval variable to free memory
-    mpfi_clear((mpfi_ptr) interval);
-    mpfi_clear((mpfi_ptr) interval2);
-    mpfi_clear((mpfi_ptr) addTwoIntervals);
-
-*/
-
-/*
-
-    //########################################################################################
-    //testing f and g function
-
-    mpfi_t resultOfF;
-    mpfi_init((mpfi_ptr) resultOfF);
-
-    mpfi_t x;
-    // Initialize the interval variable
-    mpfi_init((mpfi_ptr) x);
-    // Set the interval to [-1, 2]
-    mpfi_interv_si( (mpfi_ptr) x, -1, 2);
-
-    mpfi_t y;
-    // Initialize the interval variable
-    mpfi_init((mpfi_ptr) y);
-    // Set the interval to [-2, 1]
-    mpfi_interv_si( (mpfi_ptr) y, -2, 1);
-
-    mpfi_t z;
-    // Initialize the interval variable
-    mpfi_init((mpfi_ptr) z);
-    // Set the interval to [-1, 1]
-    mpfi_interv_si( (mpfi_ptr) z, -1, 1);
-
-    f(resultOfF, x, y, z);
-
-
-    mpfi_t resultOfg;
-    mpfi_init((mpfi_ptr) resultOfg);
-
-    g(resultOfg, x, y, z);
-
-
-    std::cout << "After f function" << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) resultOfF);
-    std::cout << "\n";
-    std::cout << "After g function" << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) resultOfg);
-    std::cout << "\n";
-
-    std::cout << "Does f(interval) Contain Zero? " << mpfi_has_zero(resultOfF) << "\n";
-    std::cout << "Does g(interval) Contain Zero? " << mpfi_has_zero(resultOfg) << "\n";
-
-    mpfi_t noZero; 
-    mpfi_init((mpfi_ptr) noZero);
-    mpfi_interv_si(noZero, 1, 3);
-
-    std::cout << "noZero" << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) noZero);
-    std::cout << "\n";
-    std::cout << "Does noZero Contain Zero?  " << mpfi_has_zero(noZero) << "\n";
-
-    mpfi_clear((mpfi_ptr) resultOfF);
-    mpfi_clear((mpfi_ptr) resultOfg);
-    
-    mpfi_clear((mpfi_ptr) noZero);
-
-    for(int i = 0; i < 2; i++){
-        mpfi_t x; 
-        mpfi_init(x);
-        mpfi_interv_d((mpfi_ptr) x, (double)1.0, (double)2.0);
-    }
-
-    */
-    
-
-    /*
-    //previous tests to make sure class was working
-
-
-    intervalClass arr[2];
-    intervalClass obj1 = intervalClass(1.0, 2.0, 1, 2, 1, 2); 
-    intervalClass obj2 = intervalClass(2.0, 4.0); 
-    for(int i = 0; i < 2; i++){
-        arr[i] = intervalClass(i -1, i+1);
-    }
-
-    for(int i = 0; i < 2; i++){
-        arr[i].p();
-        arr[i].Clear();
-    }
-    
-    
-    */
-    
-
-
-    /*
-    
-    // testing out bisects function 
-
-
-    mpfi_t x1; 
-    mpfi_t x2;
-    mpfi_t y1;
-    mpfi_t y2;
-    mpfi_t z1;
-    mpfi_t z2;
-    
-    mpfi_inits ((mpfi_ptr) x1, (mpfi_ptr) x2, (mpfi_ptr) y1, (mpfi_ptr) y2, (mpfi_ptr) z1, (mpfi_ptr) z2, (mpfi_ptr) 0);
-    mpfi_bisect(x1, x2, x);
-    mpfi_bisect(y1, y2, y);
-    mpfi_bisect(z1, z2, z);
-    
-
-    std::cout << "After Bisects function x: " << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) x);
-    std::cout << "\n";
-    std::cout << "After Bisects function x1: " << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) x1);
-    std::cout << "\n";
-    std::cout << "After Bisects function x2: " << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) x2);
-    std::cout << "\n";
-
-
-
-    std::cout << "After Bisects function y: " << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) y);
-    std::cout << "\n";
-    std::cout << "After Bisects function y1: " << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) y1);
-    std::cout << "\n";
-    std::cout << "After Bisects function y2: " << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) y2);
-    std::cout << "\n";
-
-
-    std::cout << "After Bisects function z: " << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) z);
-    std::cout << "\n";
-    std::cout << "After Bisects function z1: " << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) z1);
-    std::cout << "\n";
-    std::cout << "After Bisects function z2: " << "\n";
-    mpfi_out_str(stdout, 10, 0, (mpfi_ptr) z2);
-    std::cout << "\n";
-
-    mpfi_clears((mpfi_ptr) x1, (mpfi_ptr) x2, (mpfi_ptr) y1, (mpfi_ptr) y2, (mpfi_ptr) z1, (mpfi_ptr) z2, (mpfi_ptr) 0);
-
-    mpfi_clear((mpfi_ptr) x);
-    mpfi_clear((mpfi_ptr) y);
-    mpfi_clear((mpfi_ptr) z);
-    */
- 
-     /*
-     
-     
-    //Testing out queue 
-    std::cout<< "\n" << "Now trying to print out queue: " << "\n";
-    std::queue<intervalClass> intervalQueue;
-
-
-    //pushing first box in there: 
-    intervalQueue.push(intervalClass((double)  -1, (double) 1));
-
-
-    // Example usage: push mpfi_t elements into the queue
-    for (int i = 0; i < 5; ++i) {
-        // Initialize mpfi_t interval
-
-       
-
-        intervalQueue.push(intervalClass((double) i -1, (double) i + 1)); // Push interval into the queue
-    }
-
-    // Example usage: pop mpfi_t elements from the queue
-    while (!intervalQueue.empty()) {
-        intervalClass x = intervalQueue.front(); // Get front element of the queue
-        intervalQueue.pop(); // Remove front element from the queue
-        x.p();
-        x.Clear(); // Clear mpfi_t interval when done
-    }
-
-    */
